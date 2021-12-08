@@ -1,22 +1,38 @@
+/*
+  * Berkas ini menampung kode untuk membuat, mengonfigurasi, dan menjalankan HTTP server menggunakan Hapi.
+  * memuat kode untuk membuat, mengonfigurasi, serta menjalankan HTTP server menggunakan Hapi
 
+*/
 const Hapi = require('@hapi/hapi');
-const routes = require('./routes');
 
+
+const notes = require('./api/notes');
+const NotesService = require('./services/inMemory/NoteService');
+const NotesValidator  = require('./validator/notes')
+
+ 
 const init = async () => {
-    const server = Hapi.server({
-        port: 5000,
-        host: 'localhost',
-        routes: {
-          cors: {
-            origin: ['*'],
-          },
-        },
-      });
-
-    server.route(routes)
-    await server.start();
-    console.log(`Server berjalan pada ${server.info.uri}`);
+  const notesService = new NotesService();
+  const server = Hapi.server({
+    port: 5000,
+    host: process.env.NODE_ENV !== 'production' ? 'localhost' : '0.0.0.0',
+    routes: {
+      cors: {
+        origin: ['*'],
+      },
+    },
+  });
+ 
+  await server.register({
+    plugin: notes,
+    options: {
+      service: notesService,
+      validator : NotesValidator
+    },
+  });
+ 
+  await server.start();
+  console.log(`Server berjalan pada ${server.info.uri}`);
 };
-
+ 
 init();
-console.log("sad")
