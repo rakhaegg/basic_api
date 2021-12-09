@@ -3,12 +3,12 @@
      Kesalahan validasi data merupakan salah satu InvariantError.
 
 */
-const ClientError = require('./ClientError');
-     
-class InvariantError extends ClientError {
-  constructor(message) {
-    super(message);
-    this.name = 'InvariantError';
-  } 
+
+class ClientError extends Error {
+    constructor(message, statusCode = 400) {
+        super(message);
+        this.statusCode = statusCode;
+        this.name = 'ClientError';
+    }
 }
-module.exports = InvariantError;
+module.exports = ClientError;
