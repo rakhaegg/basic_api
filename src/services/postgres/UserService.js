@@ -9,7 +9,14 @@ class UsersService {
   constructor() {
     this._pool = new Pool();
   }
-
+  async getUsersByUsername(username) {
+    const query = {
+        text: 'SELECT id, username, fullname FROM users WHERE username LIKE $1',
+        values: [`%${username}%`],
+      };
+      const result = await this._pool.query(query);
+      return result.rows;
+}
   async addUser({ username, password, fullname }) {
         // TODO: Verifikasi username, pastikan belum terdaftar.
     // TODO: Bila verifikasi lolos, maka masukkan user baru ke database.
